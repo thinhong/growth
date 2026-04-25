@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SWOT · Growth</title>
+  <link rel="stylesheet" href="styles.css?v=9" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+  <style>
+    .crumbs { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); margin-bottom: 18px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .crumbs a:hover { color: var(--accent); }
+    .crumbs .sep { margin: 0 8px; color: var(--rule); }
+
+    .tool-head {
+      position: relative;
+      padding: 32px 32px 28px;
+      margin-bottom: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .tool-head::before {
+      content: ''; display: none;
+      z-index: -1;
+    }
+    .tool-head::after {
+      content: '';
+      position: absolute; right: -120px; top: -100px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, oklch(0.56 0.19 252 / 0.16), transparent 70%);
+      z-index: -1;
+    }
+    .tool-head h1 { font-size: 56px; line-height: 1.0; letter-spacing: -0.04em; margin: 16px 0 14px; font-weight: 800; }
+    .tool-head h1 .accent { color: var(--accent); font-style: italic; }
+    .tool-head .lede { font-size: 17px; color: var(--ink-soft); max-width: 56ch; }
+    .tool-head .head-foot {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--rule);
+      font-family: var(--mono); font-size: 11px;
+      color: var(--ink-soft); letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .tool-head .head-foot .stat .k { color: var(--ink-faint); }
+    .tool-head .head-foot .stat .v { color: var(--ink); font-weight: 700; margin-left: 8px; }
+
+    .swot-frame {
+      position: relative;
+      margin: 56px 0 32px;
+      display: grid;
+      grid-template-columns: 64px 1fr 1fr 64px;
+      grid-template-rows: 44px 1fr 1fr 44px;
+      gap: 12px;
+    }
+    .swot-axis-top, .swot-axis-bot, .swot-axis-l, .swot-axis-r {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .swot-axis-top { grid-column: 2 / 4; grid-row: 1; }
+    .swot-axis-bot { grid-column: 2 / 4; grid-row: 4; }
+    .swot-axis-l { grid-column: 1; grid-row: 2 / 4; writing-mode: vertical-rl; transform: rotate(180deg); }
+    .swot-axis-r { grid-column: 4; grid-row: 2 / 4; writing-mode: vertical-rl; }
+
+    .quad {
+      padding: 20px 22px;
+      background: var(--bg-card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      min-height: 280px;
+      display: flex; flex-direction: column;
+      transition: border-color .15s, background .15s;
+    }
+    .quad:hover { border-color: var(--ink-faint); }
+    .quad.q-S { grid-column: 2; grid-row: 2; }
+    .quad.q-W { grid-column: 3; grid-row: 2; }
+    .quad.q-O { grid-column: 2; grid-row: 3; }
+    .quad.q-T { grid-column: 3; grid-row: 3; }
+    .quad.active { border-color: var(--accent); background: var(--accent-soft); }
+
+    .quad-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .quad-letter {
+      font-family: var(--sans); font-weight: 700; font-size: 28px;
+      line-height: 1; color: var(--accent); letter-spacing: -0.02em;
+    }
+    .quad-name { font-family: var(--sans); font-weight: 600; font-size: 18px; color: var(--ink); }
+    .quad-prompt { color: var(--ink-faint); font-size: 13px; line-height: 1.4; margin-bottom: 14px; max-width: 38ch; }
+
+    .swot-list { display: flex; flex-direction: column; flex: 1; }
+    .swot-item {
+      display: grid;
+      grid-template-columns: 22px 1fr 18px;
+      gap: 8px;
+      padding: 4px 0;
+      align-items: center;
+    }
+    .swot-item .bullet { font-family: var(--mono); color: var(--ink-faint); font-size: 11px; }
+    .swot-item input {
+      border: 0; background: transparent; outline: none;
+      font-family: var(--sans); font-size: 14px; color: var(--ink);
+      padding: 6px 0;
+      border-bottom: 1px solid transparent;
+      transition: border-color .12s;
+    }
+    .swot-item input:focus { border-bottom-color: var(--rule); }
+    .swot-item input::placeholder { color: var(--ink-faint); }
+    .swot-item .x {
+      appearance: none; border: 0; background: transparent; cursor: pointer;
+      color: var(--ink-faint); opacity: 0; font-size: 14px;
+      transition: opacity .12s, color .12s;
+    }
+    .swot-item:hover .x { opacity: 1; }
+    .swot-item .x:hover { color: var(--accent); }
+
+    .swot-add {
+      margin-top: 12px;
+      font-family: var(--sans); font-size: 12px; font-weight: 500;
+      color: var(--ink-soft);
+      background: transparent; border: 1px dashed var(--rule); border-radius: var(--radius-sm);
+      padding: 8px 12px; cursor: pointer; text-align: left;
+    }
+    .swot-add:hover { border-color: var(--ink-faint); color: var(--ink); }
+
+    .swot-legend {
+      margin-top: 32px;
+      padding: 20px 24px;
+      background: var(--bg-soft);
+      border-radius: var(--radius);
+      max-width: 720px;
+    }
+    .swot-legend .lbl { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); margin-bottom: 6px; }
+    .swot-legend .body { color: var(--ink-soft); font-size: 15px; max-width: 60ch; }
+
+    @media (max-width: 720px) {
+      .swot-frame { grid-template-columns: 1fr; grid-template-rows: auto auto auto auto auto auto; gap: 8px; }
+      .swot-axis-top, .swot-axis-bot { grid-column: 1; }
+      .swot-axis-l, .swot-axis-r { display: none; }
+      .quad.q-S, .quad.q-W, .quad.q-O, .quad.q-T { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <a class="brand" href="index.html" aria-label="Back to Growth home">
+        <span class="brand-icon" aria-hidden="true">◀</span>
+        <span>GROWTH</span>
+      </a>
+      <nav class="trail" aria-label="Breadcrumb">
+        <a class="trail-crumb" href="index.html">Tools</a>
+        <span class="trail-sep" aria-hidden="true">/</span>
+        <span class="trail-here">SWOT</span>
+      </nav>
+      <div class="hud" aria-hidden="true">
+        <span class="stat"><span class="k">TOOL</span> <span class="v">02 / 05</span></span>
+        <span class="stat"><span class="k">MODE</span> <span class="v">SCAN</span></span>
+        <span class="bar"><i></i><i class="on"></i><i></i><i></i><i></i></span>
+      </div>
+    </header>
+
+    <header class="tool-head">
+      <div class="hud-label">TOOL 02 · SELF-ASSESSMENT</div>
+      <h1>SWOT <span class="accent">Analysis.</span></h1>
+      <p class="lede">
+        Four quadrants for honest self-assessment. What's yours and helps,
+        what's yours and hinders, what lies outside you and helps, what lies
+        outside you and hinders.
+      </p>
+      <div class="head-foot">
+        <span class="stat"><span class="k">METAPHOR</span><span class="v">2×2 GRID</span></span>
+        <span class="stat"><span class="k">DURATION</span><span class="v">~15 MIN</span></span>
+        <span class="stat"><span class="k">PARTY</span><span class="v">SOLO</span></span>
+      </div>
+    </header>
+
+    <div id="root"></div>
+
+    <footer class="colophon">
+      <div class="save">SAVE · LOCAL SESSION</div>
+      <div>TOOL 02 · SWOT</div>
+      <div>◀ <a href="index.html" style="color:inherit">MENU</a></div>
+    </footer>
+  </div>
+  <script type="text/babel" src="swot.jsx"></script>
+</body>
+</html>

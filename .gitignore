@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Local dev
+node_modules/
+.cache/
+
+# Local-only project folders
+screenshots/
+uploads/

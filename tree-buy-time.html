@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buy back this hour? · Growth</title>
+  <link rel="stylesheet" href="styles.css?v=9" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+  <style>
+    .crumbs { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); margin-bottom: 18px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .crumbs a:hover { color: var(--accent); }
+    .crumbs .sep { margin: 0 8px; color: var(--rule); }
+
+    .tool-head {
+      position: relative;
+      padding: 28px 32px 24px;
+      margin: 0 0 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .tool-head h1 { font-size: 40px; line-height: 1.05; letter-spacing: -0.035em; margin: 14px 0 12px; font-weight: 800; }
+    .tool-head h1 .accent { color: var(--accent); font-style: italic; }
+    .tool-head .lede { font-size: 16px; color: var(--ink-soft); max-width: 56ch; }
+
+    /* Walk lives inside the standard page width but stays centered as a focused
+       reading column so the question / buttons sit in the middle of the page. */
+    .walk {
+      max-width: 720px;
+      margin: 32px auto 32px;
+    }
+
+    /* ── Horizontal stepper across the top of the walk ── */
+    .flowchart {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 10px 16px;
+      margin-bottom: 28px;
+      background: var(--bg-card);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+    }
+
+    .fc-node {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--ink-faint);
+      white-space: nowrap;
+      transition: background .15s, color .15s;
+      flex-shrink: 0;
+    }
+    .fc-node .marker {
+      width: 10px; height: 10px;
+      border: 1.5px solid var(--rule);
+      border-radius: 50%;
+      background: var(--bg-card);
+      flex-shrink: 0;
+      transition: all .15s;
+    }
+    .fc-node.visited { color: var(--ink-soft); }
+    .fc-node.visited .marker { background: var(--ink); border-color: var(--ink); }
+    .fc-node.current { background: var(--accent-soft); color: var(--accent-ink); font-weight: 700; }
+    .fc-node.current .marker { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 3px oklch(0.56 0.19 252 / 0.18); }
+    .fc-node .fc-num { font-weight: 700; opacity: 0.95; }
+
+    .fc-connector {
+      flex: 1 1 auto;
+      min-width: 12px;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .fc-terminal {
+      margin-left: 14px;
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--rule);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .fc-terminal.reached {
+      border-style: solid;
+      border-color: var(--ink);
+      color: var(--ink);
+      background: var(--bg-soft);
+    }
+
+    .stage { padding-top: 4px; }
+    .stage .step-label {
+      font-family: var(--mono); font-size: 11px; color: var(--accent-ink);
+      margin-bottom: 18px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .stage .step-label::before {
+      content: ''; width: 8px; height: 8px;
+      background: var(--accent); border-radius: 1px;
+    }
+    .stage .step-label .of { color: var(--rule); margin: 0 6px; }
+    .stage .question {
+      font-family: var(--sans); font-weight: 600; font-size: 38px;
+      line-height: 1.15; color: var(--ink); letter-spacing: -0.03em;
+      margin-bottom: 16px; max-width: 22ch;
+    }
+    .stage .clarify {
+      font-size: 16px; color: var(--ink-soft); max-width: 50ch;
+      margin-bottom: 14px; line-height: 1.55;
+    }
+    .stage .example {
+      font-size: 14px; color: var(--ink-faint); max-width: 50ch;
+      margin-bottom: 36px; padding: 12px 16px;
+      background: var(--bg-soft); border-radius: var(--radius-sm);
+      border-left: 3px solid var(--rule);
+    }
+
+    .yn-row { display: flex; gap: 14px; flex-wrap: wrap; }
+    .yn-btn {
+      appearance: none;
+      background: var(--bg-card);
+      border: 1px solid var(--rule);
+      border-bottom: 3px solid var(--rule);
+      border-radius: var(--radius);
+      color: var(--ink);
+      font-family: var(--mono); font-size: 13px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 18px 28px;
+      cursor: pointer;
+      transition: all .12s;
+      min-width: 180px;
+      text-align: center;
+      position: relative;
+    }
+    .yn-btn:hover { transform: translateY(-1px); }
+    .yn-btn:active { transform: translateY(2px); border-bottom-width: 1px; }
+    .yn-btn.yn-yes:hover { background: var(--accent); border-color: var(--accent-deep); color: white; }
+    .yn-btn.yn-no:hover { background: var(--warm-soft); border-color: var(--warm-deep); color: var(--warm-deep); }
+    .yn-btn .arrow { display: block; font-family: var(--mono); font-size: 10px; margin-top: 6px; opacity: 0.55; font-weight: 500; letter-spacing: 0.12em; }
+    .yn-btn .key { position: absolute; top: 8px; left: 10px; font-family: var(--mono); font-size: 10px; color: var(--ink-faint); font-weight: 700; }
+
+    .verdict {
+      position: relative;
+      padding: 32px 32px 28px;
+      border: 2px solid var(--accent);
+      border-radius: var(--radius);
+      max-width: 600px;
+      background: var(--bg-card);
+      margin-bottom: 24px;
+      box-shadow: 0 4px 0 var(--accent-deep);
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .verdict::before {
+      content: ''; display: none;
+      z-index: -1;
+    }
+    .verdict.buy {
+      border-color: var(--warm);
+      box-shadow: 0 4px 0 var(--warm-deep);
+      background: var(--warm-soft);
+    }
+    .verdict .stamp {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 12px; font-weight: 800;
+      color: var(--accent-ink);
+      letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 14px;
+      padding: 5px 10px;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+    }
+    .verdict .stamp::before {
+      content: '◆';
+      color: var(--accent);
+    }
+    .verdict.buy .stamp {
+      color: var(--warm-deep);
+      border-color: var(--warm-deep);
+      background: oklch(0.99 0.02 75);
+    }
+    .verdict.buy .stamp::before { color: var(--warm-deep); }
+    .verdict h2 {
+      font-size: 36px; font-weight: 800; line-height: 1.05;
+      margin-bottom: 14px; letter-spacing: -0.03em;
+    }
+    .verdict .reasoning { color: var(--ink-soft); font-size: 15.5px; line-height: 1.55; max-width: 48ch; }
+    .verdict .reasoning strong { color: var(--ink); font-weight: 600; }
+
+    .restart-row { display: flex; gap: 12px; align-items: center; }
+
+    @media (max-width: 720px) {
+      .tool-head { padding: 22px 20px 20px; margin-bottom: 16px; }
+      .tool-head h1 { font-size: 30px; margin: 12px 0 10px; }
+      .tool-head .lede { font-size: 15px; }
+      .walk { margin: 20px auto 28px; }
+      .stage .question { font-size: 26px; max-width: none; }
+      .stage .clarify { font-size: 15px; margin-bottom: 12px; }
+      .stage .example { font-size: 13.5px; padding: 10px 14px; margin-bottom: 24px; }
+      .stage .step-label { font-size: 10px; margin-bottom: 14px; }
+      .yn-row { gap: 10px; }
+      .yn-btn { min-width: 0; flex: 1 1 140px; padding: 14px 16px; font-size: 12px; }
+      .yn-btn .key { display: none; }
+      .verdict { padding: 22px 20px 20px; max-width: none; }
+      .verdict h2 { font-size: 26px; }
+      .verdict .reasoning { font-size: 14.5px; }
+      .verdict .stamp { font-size: 11px; padding: 4px 8px; }
+      .restart-row { flex-wrap: wrap; }
+      .flowchart { padding: 8px 12px; margin-bottom: 22px; }
+      .fc-node { padding: 5px 8px; gap: 6px; font-size: 11px; }
+      .fc-terminal { padding: 4px 8px; font-size: 9px; margin-left: 8px; }
+    }
+    @media (max-width: 420px) {
+      .tool-head h1 { font-size: 26px; }
+      .stage .question { font-size: 22px; }
+      .verdict h2 { font-size: 22px; }
+      .yn-btn { flex: 1 1 100%; padding: 14px 14px; }
+      .yn-btn .arrow { font-size: 9px; }
+      .fc-connector { width: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <a class="brand" href="trees.html" aria-label="Back to Trees library">
+        <span class="brand-icon" aria-hidden="true">◀</span>
+        <span>GROWTH</span>
+      </a>
+      <nav class="trail" aria-label="Breadcrumb">
+        <a class="trail-crumb" href="index.html">Tools</a>
+        <span class="trail-sep" aria-hidden="true">/</span>
+        <a class="trail-crumb" href="trees.html">Trees</a>
+        <span class="trail-sep" aria-hidden="true">/</span>
+        <span class="trail-here">Buy Back This Hour</span>
+      </nav>
+      <div class="hud" aria-hidden="true">
+        <span class="stat"><span class="k">NODE</span> <span class="v" id="hud-node">01 / 04</span></span>
+        <span class="stat"><span class="k">MODE</span> <span class="v">WALK</span></span>
+      </div>
+    </header>
+
+    <header class="tool-head">
+      <div class="hud-label">TREE 01 · MONEY × TIME</div>
+      <h1>Should I pay to <span class="accent">buy back</span> this hour?</h1>
+      <p class="lede">
+        A four-question fast-and-frugal tree for tasks you could outsource,
+        automate, delegate, or upgrade-out-of. Walk it slowly — most hours
+        are not worth buying.
+      </p>
+    </header>
+
+    <div id="root"></div>
+
+    <footer class="colophon">
+      <div class="save">SAVE · LOCAL SESSION</div>
+      <div>TREE 01 · BUY BACK THE HOUR</div>
+      <div>◀ <a href="trees.html" style="color:inherit">LIBRARY</a></div>
+    </footer>
+  </div>
+  <script type="text/babel" src="tree-buy-time.jsx?v=5"></script>
+</body>
+</html>

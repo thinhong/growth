@@ -1,0 +1,485 @@
+/* ─── Growth · "life is the game" — bold game-spirit system ───────────
+   Aesthetic: indie-game UI on a blueprint canvas.
+   Background = faint dot-grid + scanlines. Type = Inter + JetBrains Mono.
+   Color = white + navy + vivid mid-blue, amber as "trophy" accent.
+   Cues: HUD strip, level-select cards, corner-bracket frames,
+         chunky "press" buttons, achievement-style verdicts.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Surfaces */
+  --bg:           oklch(0.995 0.005 240);
+  --bg-soft:      oklch(0.975 0.018 240);
+  --bg-card:      oklch(1 0 0);
+  --bg-deep:      oklch(0.96 0.025 245);
+
+  /* Ink — deep navy */
+  --ink:          oklch(0.20 0.05 250);
+  --ink-soft:     oklch(0.40 0.05 250);
+  --ink-faint:    oklch(0.60 0.04 245);
+  --rule:         oklch(0.88 0.025 240);
+  --rule-faint:   oklch(0.93 0.018 240);
+
+  /* Primary — vivid mid-blue */
+  --accent:       oklch(0.56 0.19 252);
+  --accent-soft:  oklch(0.94 0.05 250);
+  --accent-ink:   oklch(0.42 0.20 252);
+  --accent-deep:  oklch(0.30 0.16 256);
+  --accent-fg:    #ffffff;
+
+  /* Sky for hero panels */
+  --sky:          oklch(0.97 0.03 240);
+  --sky-deep:     oklch(0.90 0.06 240);
+
+  /* Amber — "trophy / unlocked" */
+  --warm:         oklch(0.76 0.15 75);
+  --warm-soft:    oklch(0.96 0.05 80);
+  --warm-ink:     oklch(0.48 0.13 60);
+  --warm-deep:    oklch(0.40 0.13 55);
+
+  /* Sage — "patience / growth tip" */
+  --moss:         oklch(0.58 0.10 160);
+  --moss-soft:    oklch(0.95 0.035 160);
+  --moss-ink:     oklch(0.40 0.10 160);
+
+  --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  --col-margin: 13ch;
+  --col-body:   62ch;
+
+  --radius: 6px;
+  --radius-sm: 4px;
+  --radius-lg: 10px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ── Frame ── */
+.page {
+  position: relative;
+  min-height: 100vh;
+  padding: 24px 48px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── HUD masthead — top game-bar ──
+   Layout: [BACK button] [breadcrumb trail · expands] [HUD stats]
+   Back is the first interactive element on the left for thumb/cursor convenience.
+   Brand wordmark IS the back button — universal pattern + larger hit target.
+*/
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: oklch(0.92 0.03 240);
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+  box-shadow: 0 2px 0 var(--accent-deep), 0 14px 30px -18px oklch(0.20 0.05 250 / 0.55);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+/* Brand → home button (primary back affordance) */
+.masthead .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: oklch(0.30 0.06 250);
+  border: 1px solid oklch(0.42 0.06 250);
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 12px;
+  color: white;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .14s, border-color .14s, color .14s, transform .08s, box-shadow .14s;
+  flex-shrink: 0;
+}
+.masthead .brand:hover {
+  background: var(--accent);
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 0 3px oklch(0.56 0.19 252 / 0.25);
+}
+.masthead .brand:active { transform: translateY(1px); }
+.masthead .brand:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.masthead .brand .brand-icon {
+  display: inline-block;
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0.9;
+  transition: transform .14s;
+}
+.masthead .brand:hover .brand-icon { transform: translateX(-2px); }
+
+/* Static brand (used on the home page — no back navigation needed) */
+.masthead .brand--static {
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+  padding-left: 4px;
+}
+.masthead .brand--static:hover {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.masthead .brand--static:active { transform: none; }
+
+/* ── Legacy masthead classes (still used on index.html) ──
+   Kept so the home-page header renders without rewriting it.
+   Subpages use the .brand / .trail structure above instead. */
+.masthead .title {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  color: white;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 4px 6px;
+}
+.masthead .title .sep { color: oklch(0.55 0.04 250); font-weight: 500; }
+.masthead .title .dim {
+  color: oklch(0.78 0.04 240);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.masthead .meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: oklch(0.78 0.04 240);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-left: auto;
+  padding-left: 12px;
+}
+.masthead .meta a:hover { color: white; }
+
+/* Breadcrumb trail */
+.masthead .trail {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: oklch(0.78 0.04 240);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.masthead .trail a {
+  color: oklch(0.78 0.04 240);
+  padding: 5px 8px;
+  border-radius: 3px;
+  transition: color .12s, background .12s;
+}
+.masthead .trail a:hover {
+  color: white;
+  background: oklch(0.30 0.06 250);
+}
+.masthead .trail a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.masthead .trail .trail-sep {
+  color: oklch(0.50 0.04 250);
+  font-weight: 500;
+  padding: 0 2px;
+}
+.masthead .trail .trail-here {
+  color: white;
+  font-weight: 600;
+  padding: 5px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* HUD stats (decorative — not interactive) */
+.masthead .hud {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: oklch(0.80 0.04 240);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.masthead .hud .stat { display: inline-flex; align-items: center; gap: 8px; }
+.masthead .hud .stat .k { color: oklch(0.65 0.04 240); }
+.masthead .hud .stat .v { color: white; font-weight: 600; }
+.masthead .hud .bar { display: inline-flex; gap: 3px; }
+.masthead .hud .bar i {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: oklch(0.55 0.04 250);
+  border-radius: 1px;
+}
+.masthead .hud .bar i.on {
+  background: var(--accent);
+  box-shadow: 0 0 6px oklch(0.56 0.19 252 / 0.7);
+}
+
+/* ── Game frame — corner brackets that wrap content ── */
+.frame {
+  position: relative;
+  padding: 28px 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+.frame::before, .frame::after,
+.frame > .frame-corners::before, .frame > .frame-corners::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+}
+.frame::before          { top: -1px;    left: -1px;    border-right: 0; border-bottom: 0; border-top-left-radius: var(--radius); }
+.frame::after           { top: -1px;    right: -1px;   border-left: 0;  border-bottom: 0; border-top-right-radius: var(--radius); }
+.frame .frame-corners::before  { bottom: -1px; left: -1px;    border-right: 0; border-top: 0;    border-bottom-left-radius: var(--radius); }
+.frame .frame-corners::after   { bottom: -1px; right: -1px;   border-left: 0;  border-top: 0;    border-bottom-right-radius: var(--radius); }
+
+/* ── Type scale ── */
+h1, h2, h3 { font-weight: 700; margin: 0; letter-spacing: -0.025em; color: var(--ink); }
+h1 { font-size: 64px; line-height: 1.0; letter-spacing: -0.04em; font-weight: 800; }
+h2 { font-size: 32px; line-height: 1.15; letter-spacing: -0.025em; }
+h3 { font-size: 20px; line-height: 1.3; letter-spacing: -0.015em; }
+
+p { margin: 0 0 14px; max-width: var(--col-body); }
+.lede { font-size: 18px; line-height: 1.55; color: var(--ink-soft); max-width: 60ch; }
+
+/* HUD-style label — used as kicker before titles */
+.hud-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent-ink);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.hud-label::before {
+  content: '';
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+.hud-label::after {
+  content: '';
+  width: 36px; height: 1px;
+  background: var(--accent);
+  opacity: 0.5;
+  display: inline-block;
+}
+
+.label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+hr.hair { border: 0; border-top: 1px solid var(--rule); margin: 24px 0; }
+
+/* ── Chunky "press" buttons ── */
+button.btn, a.btn {
+  appearance: none;
+  background: var(--accent);
+  border: 1px solid var(--accent-deep);
+  color: var(--accent-fg);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background .12s, transform .08s, box-shadow .12s, color .12s, border-color .12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 3px 0 var(--accent-deep);
+  position: relative;
+  user-select: none;
+}
+button.btn:hover, a.btn:hover {
+  background: oklch(0.50 0.19 254);
+  box-shadow: 0 4px 0 var(--accent-deep), 0 8px 18px -8px oklch(0.30 0.16 256 / 0.5);
+  transform: translateY(-1px);
+}
+button.btn:active, a.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--accent-deep);
+}
+button.btn.accent, a.btn.accent {
+  background: var(--accent); color: var(--accent-fg); border-color: var(--accent-deep);
+  box-shadow: 0 3px 0 var(--accent-deep);
+}
+button.btn.ghost, a.btn.ghost {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  box-shadow: none;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+}
+button.btn.ghost:hover {
+  background: var(--bg-soft);
+  color: var(--ink);
+  border-color: var(--ink-faint);
+  transform: none;
+  box-shadow: none;
+}
+button.btn.ghost:active { transform: translateY(1px); }
+
+button.btn.warm, a.btn.warm {
+  background: var(--warm);
+  border-color: var(--warm-deep);
+  color: var(--warm-deep);
+  box-shadow: 0 3px 0 var(--warm-deep);
+}
+button.btn.warm:hover { background: oklch(0.72 0.15 75); }
+
+input.text, textarea.text {
+  appearance: none;
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink);
+  padding: 10px 12px;
+  width: 100%;
+  outline: none;
+  resize: none;
+  transition: border-color .12s, box-shadow .12s;
+}
+input.text::placeholder, textarea.text::placeholder { color: var(--ink-faint); }
+input.text:focus, textarea.text:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* ── HUD pill — small status / level chip ── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  background: var(--accent-soft);
+  border: 1px solid oklch(0.78 0.07 248);
+  color: var(--accent-ink);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 3px;
+}
+.pill.warm { background: var(--warm-soft); border-color: oklch(0.82 0.08 75); color: var(--warm-deep); }
+.pill.moss { background: var(--moss-soft); border-color: oklch(0.82 0.06 160); color: var(--moss-ink); }
+.pill.muted { background: var(--bg-soft); border-color: var(--rule); color: var(--ink-faint); }
+.pill::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: currentColor;
+  border-radius: 1px;
+  opacity: 0.7;
+}
+
+/* ── Footer ── */
+.colophon {
+  margin-top: 80px;
+  padding: 14px 18px;
+  background: var(--ink);
+  color: oklch(0.78 0.04 240);
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.colophon .save {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: oklch(0.92 0.03 240);
+}
+.colophon .save::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--moss);
+  border-radius: 50%;
+  box-shadow: 0 0 6px oklch(0.58 0.10 160 / 0.7);
+}
+
+@media (max-width: 900px) {
+  .masthead .hud { display: none; }
+}
+@media (max-width: 720px) {
+  .page { padding: 16px 16px 60px; }
+  h1 { font-size: 40px; }
+  h2 { font-size: 24px; }
+  :root { --col-margin: 0; }
+  .masthead { padding: 8px 10px; gap: 4px 8px; }
+  .masthead .brand { padding: 6px 10px; font-size: 11px; }
+  .masthead .trail { font-size: 11px; }
+  .masthead .trail a, .masthead .trail .trail-here { padding: 4px 6px; }
+}
+@media (max-width: 420px) {
+  /* On phones, prefer to show the back button + just the current page name */
+  .masthead .trail .trail-crumb { display: none; }
+  .masthead .trail .trail-sep { display: none; }
+}
