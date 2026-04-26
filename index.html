@@ -31,22 +31,22 @@
     .door { cursor: pointer; transform-box: fill-box; transform-origin: 50% 100%; transition: transform 0.5s cubic-bezier(.2,.8,.2,1), filter 0.5s; will-change: transform, filter; filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0)); }
     .door-left  { --glow-color: rgba(255, 175,  60, 0.85); }
     .door-right { --glow-color: rgba( 90, 140, 255, 0.85); }
-    .door:hover { transform: translateY(-4px) scale(1.05); }
-    .door-left:hover  { filter: brightness(1.08) drop-shadow(0 0 14px var(--glow-color)) drop-shadow(0 0 28px var(--glow-color)); }
-    .door-right:hover { filter: brightness(1.2)  drop-shadow(0 0 14px var(--glow-color)) drop-shadow(0 0 28px var(--glow-color)); }
-    .scene:has(.door-left:hover)  .door-right { filter: brightness(0.92) saturate(0.85); opacity: 0.8; }
-    .scene:has(.door-right:hover) .door-left  { filter: brightness(0.92) saturate(0.85); opacity: 0.8; }
+    .door:hover, .door.is-active { transform: translateY(-4px) scale(1.05); }
+    .door-left:hover, .door-left.is-active   { filter: brightness(1.08) drop-shadow(0 0 14px var(--glow-color)) drop-shadow(0 0 28px var(--glow-color)); }
+    .door-right:hover, .door-right.is-active { filter: brightness(1.2)  drop-shadow(0 0 14px var(--glow-color)) drop-shadow(0 0 28px var(--glow-color)); }
+    .scene:has(.door-left:hover)  .door-right, .scene:has(.door-left.is-active)  .door-right { filter: brightness(0.92) saturate(0.85); opacity: 0.8; }
+    .scene:has(.door-right:hover) .door-left,  .scene:has(.door-right.is-active) .door-left  { filter: brightness(0.92) saturate(0.85); opacity: 0.8; }
     .world-inner { transform-box: fill-box; transform-origin: 50% 60%; transition: transform 0.6s cubic-bezier(.2,.7,.2,1), filter 0.5s ease-out; filter: brightness(1) saturate(1); }
-    .door-left:hover  .world-inner { transform: scale(1.08); filter: brightness(1.12) saturate(1.1); }
-    .door-right:hover .world-inner { transform: scale(1.1); filter: brightness(1.5) saturate(1.35) contrast(1.05); }
+    .door-left:hover  .world-inner, .door-left.is-active  .world-inner { transform: scale(1.08); filter: brightness(1.12) saturate(1.1); }
+    .door-right:hover .world-inner, .door-right.is-active .world-inner { transform: scale(1.1); filter: brightness(1.5) saturate(1.35) contrast(1.05); }
     .door-halo { transition: opacity 0.5s, transform 0.5s; opacity: 0.85; transform-box: fill-box; transform-origin: 50% 50%; }
-    .door:hover .door-halo { opacity: 1; transform: scale(1.3); }
+    .door:hover .door-halo, .door.is-active .door-halo { opacity: 1; transform: scale(1.3); }
     .twinkle { animation: twinkle 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
     .twinkle.t2 { animation-delay: -0.6s; } .twinkle.t3 { animation-delay: -1.2s; } .twinkle.t4 { animation-delay: -1.8s; }
-    .door:hover .twinkle { animation-duration: 1s; }
+    .door:hover .twinkle, .door.is-active .twinkle { animation-duration: 1s; }
     @keyframes twinkle { 0%, 100% { opacity: 0.35; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.2); } }
     .sparks { opacity: 0; transition: opacity 0.4s; }
-    .door:hover .sparks { opacity: 1; }
+    .door:hover .sparks, .door.is-active .sparks { opacity: 1; }
     .spark { animation: spark-rise 1.8s ease-out infinite; transform-box: fill-box; }
     .spark.k2 { animation-delay: -0.4s; } .spark.k3 { animation-delay: -0.8s; } .spark.k4 { animation-delay: -1.2s; } .spark.k5 { animation-delay: -1.6s; }
     @keyframes spark-rise { 0% { transform: translateY(0) scale(0.6); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-30px) scale(0.2); opacity: 0; } }
@@ -342,28 +342,43 @@
       <a href="trees.html" class="level">
         <svg class="level-bg aside" viewBox="0 0 280 180" preserveAspectRatio="xMaxYMin meet" aria-hidden="true">
           <g opacity="0.55">
-            <line x1="140" y1="34" x2="80" y2="80" stroke="oklch(0.45 0.10 250)" stroke-width="1.6" opacity="0.7"/>
-            <line x1="140" y1="34" x2="200" y2="80" stroke="oklch(0.45 0.10 250)" stroke-width="1.6" opacity="0.7"/>
-            <line x1="80" y1="86" x2="50" y2="135" stroke="oklch(0.45 0.10 250)" stroke-width="1.4" opacity="0.6"/>
-            <line x1="80" y1="86" x2="110" y2="135" stroke="oklch(0.45 0.10 250)" stroke-width="1.4" opacity="0.6"/>
-            <line x1="200" y1="86" x2="170" y2="135" stroke="oklch(0.45 0.10 250)" stroke-width="1.4" opacity="0.6"/>
-            <line x1="200" y1="86" x2="230" y2="135" stroke="oklch(0.45 0.10 250)" stroke-width="1.4" opacity="0.6"/>
-            <text x="100" y="65" font-family="ui-monospace, monospace" font-size="9" fill="oklch(0.45 0.13 145)" opacity="0.7">yes</text>
-            <text x="170" y="65" font-family="ui-monospace, monospace" font-size="9" fill="oklch(0.50 0.16 30)" opacity="0.7">no</text>
-            <circle cx="140" cy="28" r="11" fill="oklch(0.96 0.05 240)" stroke="oklch(0.56 0.19 252)" stroke-width="1.8"/>
-            <text x="140" y="32" font-family="ui-monospace, monospace" font-size="11" font-weight="800" fill="oklch(0.40 0.16 252)" text-anchor="middle">?</text>
-            <circle cx="80" cy="80" r="10" fill="oklch(0.96 0.05 240)" stroke="oklch(0.56 0.19 252)" stroke-width="1.6"/>
-            <text x="80" y="84" font-family="ui-monospace, monospace" font-size="10" font-weight="800" fill="oklch(0.40 0.16 252)" text-anchor="middle">?</text>
-            <circle cx="200" cy="80" r="10" fill="oklch(0.96 0.05 240)" stroke="oklch(0.56 0.19 252)" stroke-width="1.6"/>
-            <text x="200" y="84" font-family="ui-monospace, monospace" font-size="10" font-weight="800" fill="oklch(0.40 0.16 252)" text-anchor="middle">?</text>
-            <rect x="38" y="135" width="24" height="24" rx="5" fill="oklch(0.65 0.13 145)" opacity="0.7"/>
-            <rect x="98" y="135" width="24" height="24" rx="5" fill="oklch(0.65 0.18 30)" opacity="0.7"/>
-            <rect x="158" y="135" width="24" height="24" rx="5" fill="oklch(0.65 0.13 145)" opacity="0.7"/>
-            <rect x="218" y="135" width="24" height="24" rx="5" fill="oklch(0.65 0.18 30)" opacity="0.7"/>
-            <text x="50" y="153" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="oklch(0.25 0.13 145)" text-anchor="middle">✓</text>
-            <text x="110" y="153" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="oklch(0.35 0.16 30)" text-anchor="middle">✗</text>
-            <text x="170" y="153" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="oklch(0.25 0.13 145)" text-anchor="middle">✓</text>
-            <text x="230" y="153" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="oklch(0.35 0.16 30)" text-anchor="middle">✗</text>
+            <!-- Q1 → Exit-A (yes) and Q1 → Q2 (no) -->
+            <line x1="98" y1="32" x2="60" y2="50" stroke="oklch(0.45 0.10 250)" stroke-width="1.6" opacity="0.7"/>
+            <line x1="123" y1="32" x2="183" y2="58" stroke="oklch(0.45 0.10 250)" stroke-width="1.6" opacity="0.7"/>
+            <!-- Q2 → Q3 (yes) and Q2 → Exit-B (no) -->
+            <line x1="183" y1="80" x2="118" y2="106" stroke="oklch(0.45 0.10 250)" stroke-width="1.6" opacity="0.7"/>
+            <line x1="208" y1="80" x2="241" y2="98" stroke="oklch(0.45 0.10 250)" stroke-width="1.6" opacity="0.7"/>
+            <!-- Q3 → Exit-C (yes) and Q3 → Exit-D (no) -->
+            <line x1="95" y1="128" x2="62" y2="148" stroke="oklch(0.45 0.10 250)" stroke-width="1.4" opacity="0.6"/>
+            <line x1="120" y1="128" x2="155" y2="148" stroke="oklch(0.45 0.10 250)" stroke-width="1.4" opacity="0.6"/>
+            <!-- yes/no labels -->
+            <text x="62" y="44" font-family="ui-monospace, monospace" font-size="9" fill="oklch(0.45 0.13 145)" opacity="0.8">yes</text>
+            <text x="148" y="44" font-family="ui-monospace, monospace" font-size="9" fill="oklch(0.50 0.16 30)" opacity="0.8">no</text>
+            <text x="142" y="92" font-family="ui-monospace, monospace" font-size="9" fill="oklch(0.45 0.13 145)" opacity="0.8">yes</text>
+            <text x="218" y="92" font-family="ui-monospace, monospace" font-size="9" fill="oklch(0.50 0.16 30)" opacity="0.8">no</text>
+            <text x="68" y="142" font-family="ui-monospace, monospace" font-size="9" fill="oklch(0.45 0.13 145)" opacity="0.8">yes</text>
+            <text x="132" y="142" font-family="ui-monospace, monospace" font-size="9" fill="oklch(0.50 0.16 30)" opacity="0.8">no</text>
+            <!-- Q1 -->
+            <rect x="85" y="10" width="50" height="22" rx="5" fill="oklch(0.96 0.05 240)" stroke="oklch(0.56 0.19 252)" stroke-width="1.6"/>
+            <text x="110" y="26" font-family="ui-monospace, monospace" font-size="12" font-weight="800" fill="oklch(0.40 0.16 252)" text-anchor="middle">?</text>
+            <!-- Q2 -->
+            <rect x="170" y="58" width="50" height="22" rx="5" fill="oklch(0.96 0.05 240)" stroke="oklch(0.56 0.19 252)" stroke-width="1.6"/>
+            <text x="195" y="74" font-family="ui-monospace, monospace" font-size="12" font-weight="800" fill="oklch(0.40 0.16 252)" text-anchor="middle">?</text>
+            <!-- Q3 -->
+            <rect x="82" y="106" width="50" height="22" rx="5" fill="oklch(0.96 0.05 240)" stroke="oklch(0.56 0.19 252)" stroke-width="1.6"/>
+            <text x="107" y="122" font-family="ui-monospace, monospace" font-size="12" font-weight="800" fill="oklch(0.40 0.16 252)" text-anchor="middle">?</text>
+            <!-- Exit-A: Q1 yes -->
+            <rect x="40" y="50" width="24" height="24" rx="5" fill="oklch(0.65 0.13 145)" opacity="0.7"/>
+            <text x="52" y="68" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="oklch(0.25 0.13 145)" text-anchor="middle">✓</text>
+            <!-- Exit-B: Q2 no -->
+            <rect x="229" y="98" width="24" height="24" rx="5" fill="oklch(0.65 0.18 30)" opacity="0.7"/>
+            <text x="241" y="116" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="oklch(0.35 0.16 30)" text-anchor="middle">✗</text>
+            <!-- Exit-C: Q3 yes -->
+            <rect x="50" y="148" width="24" height="24" rx="5" fill="oklch(0.65 0.13 145)" opacity="0.7"/>
+            <text x="62" y="166" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="oklch(0.25 0.13 145)" text-anchor="middle">✓</text>
+            <!-- Exit-D: Q3 no -->
+            <rect x="143" y="148" width="24" height="24" rx="5" fill="oklch(0.65 0.18 30)" opacity="0.7"/>
+            <text x="155" y="166" font-family="ui-monospace, monospace" font-size="14" font-weight="800" fill="oklch(0.35 0.16 30)" text-anchor="middle">✗</text>
           </g>
         </svg>
         <div class="corners"></div>
@@ -391,5 +406,62 @@
       <div>© 2026</div>
     </footer>
   </div>
+  <script>
+    // On touch devices, hover doesn't fire — auto-cycle which door is "active"
+    // so mobile users still see the two-worlds reveal. Tapping a door takes
+    // over: it stops the cycle and toggles that door's active state manually.
+    (function () {
+      var canHover = window.matchMedia('(hover: hover)').matches;
+      if (canHover) return;
+
+      var left = document.querySelector('.door-left');
+      var right = document.querySelector('.door-right');
+      if (!left || !right) return;
+
+      var doors = [left, right];
+      var idx = 0;
+      var timer = null;
+
+      function setActive(i) {
+        doors.forEach(function (d, j) { d.classList.toggle('is-active', j === i); });
+      }
+
+      function clearActive() {
+        doors.forEach(function (d) { d.classList.remove('is-active'); });
+      }
+
+      function startCycle() {
+        if (timer) return;
+        setActive(idx);
+        timer = setInterval(function () {
+          idx = 1 - idx;
+          setActive(idx);
+        }, 3200);
+      }
+
+      function stopCycle() {
+        if (timer) { clearInterval(timer); timer = null; }
+      }
+
+      // Tap-to-take-over: first tap stops auto-cycle and pins that door;
+      // tapping the same door again clears; tapping the other door swaps.
+      doors.forEach(function (door, i) {
+        door.style.cursor = 'pointer';
+        door.addEventListener('click', function (e) {
+          e.preventDefault();
+          stopCycle();
+          var wasActive = door.classList.contains('is-active');
+          clearActive();
+          if (!wasActive) door.classList.add('is-active');
+        });
+      });
+
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!prefersReduced) {
+        // Brief delay so the static scene is visible first
+        setTimeout(startCycle, 900);
+      }
+    })();
+  </script>
 </body>
 </html>
